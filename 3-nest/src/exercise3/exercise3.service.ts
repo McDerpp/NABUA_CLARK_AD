@@ -83,6 +83,7 @@ else console.log(id+" does not exist in databaase!");
 logAllCars(){
 for(const [key,car] of this.cars.entries()){
 console.log(key);
+
     car.log();
    
 }

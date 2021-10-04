@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/
 import { get } from 'http';
 import { UserService } from './user.service';
 
+
+
 @Controller('user')
 export class UserController {
     constructor(private readonly userService:UserService){}
@@ -18,27 +20,28 @@ export class UserController {
     }
    
 
-    @Get('/getUser/:id')
+    @Get('/:id')
     searchID(@Param("id") id:string){
-          return this.userService.searchID(parseInt(id));
+           return this.userService.searchID(id);
     }
 
 
     @Put('/:id')
     changeData(@Param("id") id:string, @Body() body:any){
-            return this.userService.changeData(parseInt(id),body);
+            return this.userService.changeData(id,body);
     }    
     
     
     @Patch('/:id')
     patchData(@Param("id") id:string, @Body() body:any){
-            return this.userService.patchData(parseInt(id),body);
+            return this.userService.patchData(id,body);
     }  
 
 
-    @Delete('/:id')
+    @Delete('/:id')    
     deleteUserData(@Param("id") id:string,){
-        return this.userService.deleteUserData(parseInt(id));
+        if(id==null){ console.log("its empty!")}
+        return this.userService.deleteUserData(id);
 
     }    
 
@@ -51,7 +54,7 @@ export class UserController {
 
     @Post('/populate')
     populate(){
-    return this.userService.populate;  
+    return this.userService;  
 
 
 }
