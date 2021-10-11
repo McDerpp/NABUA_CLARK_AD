@@ -1,132 +1,306 @@
-import { Injectable } from "@nestjs/common";
+import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { strictEqual } from "assert";
 import { identity, isEmpty, map } from "rxjs";
 import { resourceLimits } from "worker_threads";
 import { User } from "./user.model";
 import { Helper } from "./helper";
 import { CRUDReturn } from "./return";
+import * as admin from 'firebase-admin';
+import { agent } from "supertest";
+import { doc } from "prettier";
+import { Test } from "@nestjs/testing";
+
 
 @Injectable()
 export class UserService {
+    
 
         private users: Map<string,User> = new Map<string,User>()
+        private DB = admin.firestore();
+        
 
 constructor(){   
+
     var populatedData = [];
-    this.populate();
+  this.populate();
 }
 
-populate(){
+async populate(){
+  console.log("yqay!")
   var newUser = [
-    new User('Leanne Graham', 18, 'sincere@april.biz', 'LG_123456'),
+   new User('Leanne Graham', 18, 'sincere@april.biz', 'LG_123456'),
     new User('Ervin Howell', 21, 'shanna@melissa.tv', 'EH_123123'),
-    new User('Nathan Plains', 25, 'nathan@yesenia.net', 'NP_812415'),
-    new User('Patricia Lebsack', 18, 'patty@kory.org', 'PL_12345'), ];
+   new User('Nathan Plains', 25, 'nathan@yesenia.net', 'NP_812415'),
+  new User('Patricia Lebsack', 18, 'patty@kory.org', 'PL_12345')
+ ]      
+      newUser.forEach((User)=>{this.users.set(User.getId(),User);     }    
       
-      newUser.forEach((User)=>{this.users.set(User.getId(),User);}); 
+      ); 
+
+     for(const user of newUser ){
+      var check= this.checkEmailsV2(user.getEmail());
+      if(check){
+        this.users.set(user.getId(),user);    
+        this.DB.collection("users").doc(user.getId()).set(user.toJsonPassword());
+       var result = await user.commit();
+      }
+      }
+            
   }
 
 
-getAll():CRUDReturn{  
+async getAll():Promise<CRUDReturn>{  
+
 var populatedData = [];
-
-  for(const user of this.users.values())
-     populatedData.push(user.toJson());
-
+try{
+  var allUsers = await this. getAllUserObjects();
+  allUsers.forEach((user)=>{
+populatedData.push(user.toJson());
+  });
   return {"success":true,"data":populatedData}
+}catch(error){
+  return {"success":false,"data":error() };
+
+}
+ 
 }
 
 
-searchID(id:string):CRUDReturn{
-  for(const [key,user] of this.users.entries()){ 
-     if(this.users.has(id)===true){
-      return {"success":true,"data":this.users.get(id).toJson()}
-    }      
-}  
 
-    return {success:false,
-    data:'FOUND NOT USER'};
-}
-
-
-addUser(body:any):CRUDReturn{
-  var check:number=0;
-
-  if(body.hasOwnProperty("name"&&"age"&&"email"&&"password")==true){    
-        
-    if(typeof body?.name!="string"){check++; console.log("INVALID NAME") };
-    if(typeof body?.age!="number"){check++; console.log("INVALID AGE")} ;
-    if(typeof body?.password!="string"){check++; console.log("INVALID PASSWORD")};
-    if(typeof body?.email!="string"){check++; console.log("INVALID EMAIL")};          
-
-     if(this.checkEmails(body,null)) {return{ success:false, "data":"EMAIL ALREADY EXISTED" } }
-     
-      if(check==0){
-        var newUser : User;
-        newUser=new User(body?.name,body?.age,body?.email,body?.password);
-        this.users.set(newUser.getId(),newUser);    
-        
-        return{ success:true,data: newUser.toJson()};} 
-       }
-        return{ success:false, "data":"INVALID CREDENTIALS" } 
-}
-
-
-changeData(id:string,body:any):CRUDReturn{
-  var check:number=0;
-
-    if(this.checkEmails(body,null)) {
-      return{ success:false, "data":"EMAIL ALREADY EXISTED"}}  
-
-    if(body.hasOwnProperty("name"&&"age"&&"password"&&"email")){       
-
-     if(typeof body?.name!=="string"){check++; console.log("INVALID NAME") }
-     if(typeof body?.age!=="number"){check++; console.log("INVALID AGE")} 
-     if(typeof body?.password!=="string"){check++; console.log("INVALID PASSWORD")}
-     if(typeof body?.email!=="string"){check++; console.log("INVALID EMAIL")}
-
-    if(check!=0) return{ success:false, data: "INVALID" };  
+async getAllUserObjects():Promise<Array<User>>{  
+  var populatedData = [];
+  try{
+  var dbData : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>=
+  await this.DB.collection("users").get();
+  dbData.forEach((doc)=>{
+  if(doc.exists){
+    var data=doc.data();
+    populatedData.push(new User(
+        data["name"],
+        data["age"],
+        data["email"],
+        data["password"],
+        data["id"],
+    ));
+  }
+  })
+   //for(const user of this.users.values())
+    //   populatedData.push(user.toJson());
+    return populatedData;
+  }catch(error){
+    return null;
   
-     if(this.users.has(id)!=true){ return{"success":false,"data":"USER DOES NOT EXIST"}}   
-      
-     this.users.get(id).putData(body);
+  }
+   
+  }
 
-      return{ success:true,data:this.users.get(id).toJson()}        
+async searchID(id:string):Promise<CRUDReturn>{
+
+  var userResults = await this.DB.collection("users").get();
+for(const doc of userResults.docs){  
+if(doc.id===id){
+  var data=doc.data();
+ var newUser=new User(data["name"],data["age"],data["email"],data["password"],data["id"]);
+ this.users.set(data["id"],newUser);  
+  return{"success":true,"data":newUser.toJson()}
+}
+
     }
 
-      return{ "success":false,"data":"CHANGING OF CREDENTIALS UNSUCCESSFUL" };
-}  
+    return {"success":false,
+    "data":'FOUND NOT USER'};
+}
 
+
+async addUser(body:any):Promise<CRUDReturn>{
+  var check:number=0;
+
+  if(body.hasOwnProperty("name"&&"age"&&"email"&&"password")){    
+    var exists = this.checkEmailsV2(body.email);
+    if(await exists===true) {return{ success:false, "data":"EMAIL ALREADY EXISTED" }; }    
+  
+    if(typeof body?.name!="string"){check++;}
+    if(typeof body?.age!="number"){check++;}
+    if(typeof body?.password!="string"){check++;}
+    if(typeof body?.email!="string"){check++;}     
+  
+    if(exists){
+
+      if(check==0){
+        var newUser : User;
+    //    newUser=new User(body?.name,body?.age,body?.email,body?.password);
+     newUser=new User(body?.name,body?.age,body?.email,body?.password,body?.id);
+        this.users.set(newUser.getId(),newUser);    
+        this.DB.collection("users").doc(newUser.getId()).set(newUser.toJsonPassword());
+       var result = await newUser.commit();
+        return{ success:true,data: newUser.toJsonId()};}        
+      }
+        }
+return{ success:false, "data":"INVALID CREDENTIALS" } 
+
+}
+
+
+async checkEmailsV2(email:string,options?:{exceptionId:string}):Promise<boolean>{
+  if(email==null) return false;
+
+ var userResults = await this.DB.collection("users").where("email","==",email).get();
+  if(userResults.empty) return false;
+    for(const doc of userResults.docs){
+  
+
+
+if(options!=undefined){
+  if(doc.id==options.exceptionId) continue;
+}
+if(doc.data()["email"]===email){
+  console.log("yes!")
+return true;
+
+}
+
+    }
+console.log("no!")
+    return false;
+
+  }
+
+async changeData(id:string,body:any):Promise<CRUDReturn>{
+  var check:number=0;
+
+    if(body.hasOwnProperty("name"&&"age"&&"password"&&"email")){    
+      var exists = this.checkEmailsV2(body.email,{exceptionId:id});
+      if(await exists===true) {return{ success:false, "data":"EMAIL ALREADY EXISTED" }; }
+
+
+     if(typeof body?.name!=="string"){check++;} 
+     if(typeof body?.age!=="number"){check++;}     
+     if(typeof body?.password!=="string"){check++;}    
+     if(typeof body?.email!=="string"){check++;}
+     
+
+    if(check!=0) return{ success:false, data: "INVALID" };  
+
+  
+  var change : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>= await this.DB.collection("users").get();
+  for(const doc of change.docs){
+    if (doc.id===id){
+      var putData=this.DB.collection("users").doc(id);
+      var result =putData.update({
+        "name":body.name,
+        "age":body.age,
+        "email":body.email,
+       "password":body.password
+      
+      })
+      return {"success":true,"data":"this.usero"}
+    }
+
+  }
+  
+       
+    }
+    
+ 
+return{"success":false,"data":"USER DOES NOT EXIST"}
+
+}
 
 checkEmails(body:any,id:string):boolean{
+
   for(const [key,user] of this.users.entries()){ 
       if((this.users.get(key).checkEmail(body))==true)  
         return true}    
        return false}
 
-patchData(uniqueId:string,body:any):CRUDReturn{
 
-  for(const [key,user] of this.users.entries()){  
-       if((this.users.get(key).checkEmail(body))==true&&key!=uniqueId){ 
-        return{"success":false, 
-              "data":"email already used"}   
-       }
-      }    
+  
 
-   for(const [key,user] of this.users.entries()){
-       if(key==uniqueId){
-         if(this.users.get(uniqueId).valuePatch(body,uniqueId)!==1){
-           return { "success": false,"data":"INVALID DATA"}}
+async patchData(id:string,body:any):Promise<CRUDReturn>{
+
+ var exists = this.checkEmailsV2(body.email,{exceptionId:id});
+  //var exists = this.checkEmailsV2(body.email);
+  if(await exists===true) {return{ success:false, "data":"EMAIL ALREADY EXISTED" }; }
+
+  var change : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>= await this.DB.collection("users").get();  
+  var putData=this.DB.collection("users").doc(id); 
+  for(const doc of change.docs){ 
+    console.log(doc.id,"==",id);
+    if (doc.id==id){
+      
+    var check:number=0;
+    var namePatch=doc.data()["name"];
+    var passwordPatch=doc.data()["password"];
+    var agePatch=doc.data()["age"];
+   var emailPatch=doc.data()["email"];
+
+    if(body.hasOwnProperty("name")){
+      if(typeof body?.name!=="string"){check++;} 
+      namePatch=body.name;   
+      }
+      
+    if(body.hasOwnProperty("age")){
+      if(typeof body?.age!=="number"){check++;} 
+        agePatch=body.age       
+        }
+      
+    if(body.hasOwnProperty("password")){
+      if(typeof body?.password!=="string"){check++;} 
+      passwordPatch=body.password;
+        
+     
+          
+        }
+      
+    if(body.hasOwnProperty("email")){
+      if(typeof body?.email!=="string"){check++;} 
+          emailPatch=body.email;
+          console.log("naay email");
+          }      
+
+          if(check!=0) return{ success:false, data: "INVALID TYPES" };  
+
+
+    
+      var result =putData.update(        
+        {
+        "name":namePatch,
+        "age":agePatch,
+        "email":emailPatch,
+       "password":passwordPatch
+    
+      })
+  
 
       
-       return { "success": true,      
-      "data":this.users.get(uniqueId).toJson()}
-    }  
-      }     
 
-       return{"success":false,
-         "data":"USER DOES NOT EXIST"} 
-}
+      return {"success":true,"data":"UPDATED"}
+    }
+   
+
+  }
+  return{"success":false,"data":"USER DOES NOT EXIST"}
+      
+  
+    
+    
+        
+      }
+      
+   
+ 
+  
+    async deleteUserData(id:string):Promise<CRUDReturn>{
+      var change : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>= await this.DB.collection("users").get();      
+      for(const doc of change.docs){ 
+        if (doc.id==id){
+      const res = await this.DB.collection('users').doc(id).delete();
+      return{"success":true,"data":"USER SUCCESSFULY DELETED"};
+        }
+    }
+    return{"success":false,"data":"USER DOES NOT EXIST"};
+  }
+/*
 
 deleteUserData(id:string):CRUDReturn{
   if(this.users.has(id)){
@@ -137,23 +311,35 @@ deleteUserData(id:string):CRUDReturn{
     return{"success":false,
         "data": "cant find the user"}
 
-}
+}*/
 
-login(body:any):CRUDReturn{
-  var ctr:number = 0;
-  for(const [key,user] of this.users.entries()){
- 
-    if(this.users.get(key).loginM(body)==1){
-      return {"success":true, "data": this.users.get(key).toJson()};}
-  }
+async login(body:any):Promise<CRUDReturn>{
 
-   return{"success":false,"data": "INVALID" 
+  var ctr:number = 0;   
+  var login : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>=
+  await this.DB.collection("users").get();
+ // await (await this.DB.collection("users").get()).readTime;
+  for(const doc of login.docs){
+      if(doc.data()["email"]==body.email&&doc.data()["password"]==body.password){
+        var data=doc.data();
+        var newUser=new User(data["name"],data["age"],data["email"],data["password"],data["id"]);
+        this.users.set(data["id"],newUser);  
+         return{"success":true,"data":newUser.toJson()}}
+       
+          
+       }
 
-  }
+         
+ return {"success":false,"data":"FAILED"}
+
+
 }
 
 search(search:any):CRUDReturn{
   var storage = [];
+
+  
+
 
   for(const [key,user] of this.users.entries()){   
     if(this.users.get(key).checkValue(search)===true){
