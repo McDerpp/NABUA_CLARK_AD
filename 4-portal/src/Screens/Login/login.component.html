@@ -1,0 +1,22 @@
+<body>
+    <div class="maincontent">
+
+        <div class="login">
+            <div class="inputs">
+                <label for="EMAIL">Email</label>
+                <input type="email" name="EMAIL" placeholder="ENTER EMAIL" [formControl]="fCEmail" />
+                <label for=" PASSWORD ">Password</label >
+          <input type="password " name="PASSWORD " placeholder="ENTER PASSWORD " [formControl]="fCPassword" />
+
+
+<p>{{requestResult | json}} </p>
+
+      </div> <!--         
+        <p>{{fCEmail}}</p>
+        <p>{{fCPassword}}</p> -->
+        <button (click)="login()">LOGIN</button>
+        <button (click)="register()">REGISTER</button>
+  </div>
+
+</div>
+</body>

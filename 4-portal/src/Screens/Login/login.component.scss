@@ -1,0 +1,73 @@
+.maincontent {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+
+body {
+    background-image: url(../../assets/backgroundTest.jpg);
+    background-size: 100% 100%;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+
+.login {
+    background-color: rgb(240, 191, 172);
+    width: 600px;
+    width: 400px;
+    border-radius: 24px;
+    padding: 24px;
+    display: run-in;
+    justify-content: space-between;
+}
+
+.maincontent:not(label) {}
+
+.login>.maincontent {
+    opacity: 0%;
+}
+
+label {
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+
+.logo {
+    width: 25%;
+    height: 35%;
+    float: left;
+    margin-left: 5px;
+}
+
+button {
+    width: 40%;
+    height: 32px;
+    float: right;
+    margin-top: 20px;
+}
+
+button:hover {
+    animation-duration: .5s;
+    background-color: rgb(102, 16, 34);
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    content: "test";
+}
+
+p {
+    text-align: center;
+    font-size: 25px;
+    margin-bottom: 20px;
+    font-weight: 900;
+}
+
+body {}
