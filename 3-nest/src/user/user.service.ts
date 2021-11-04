@@ -114,6 +114,7 @@ if(doc.id===id){
 
 async addUser(body:any):Promise<CRUDReturn>{
   var check:number=0;
+  //parseInt(body.age);
 
   if(body.hasOwnProperty("name"&&"age"&&"email"&&"password")){    
     var exists = this.checkEmailsV2(body.email);
@@ -124,6 +125,16 @@ async addUser(body:any):Promise<CRUDReturn>{
     if(typeof body?.password!="string"){check++;}
     if(typeof body?.email!="string"){check++;}     
   
+console.log("checking:" + body.name)
+console.log("checking:" + body.age)
+console.log("checking:" + body.password)
+console.log("checking:" + body.email)
+
+console.log("checking type:" +typeof(body.name))
+console.log("checking type:" + typeof(body.age))
+console.log("checking type:" + typeof(body.password))
+console.log("checking type:" + typeof(body.email))
+
     if(exists){
 
       if(check==0){
@@ -133,6 +144,8 @@ async addUser(body:any):Promise<CRUDReturn>{
         this.users.set(newUser.getId(),newUser);    
         this.DB.collection("users").doc(newUser.getId()).set(newUser.toJsonPassword());
        var result = await newUser.commit();
+
+       console.log("VALID!")
         return{ success:true,data: newUser.toJsonId()};}        
       }
         }

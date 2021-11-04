@@ -1,0 +1,52 @@
+    body {
+        background-image: url(../../assets/backgroundTest.jpg);
+        background-size: 100% 100%;
+        font-family: 'ZCOOL KuaiLe', cursive;
+        font-size: 25px;
+    }
+    
+    .maincontent {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+    }
+    
+    .login {
+        background-color: rgba(153, 91, 40, 0.3);
+        padding: 20px;
+        border-radius: 25px;
+    }
+    
+    input {
+        height: 35px;
+    }
+    
+    button {
+        background-color: #ffffff;
+        color: rgb(0, 0, 0);
+        padding: 6px 50px;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+        border: .1px solid #000000;
+        span: 20px;
+    }
+    
+    button:hover {
+        animation-duration: .5s;
+        background-color: rgb(102, 16, 34, .5);
+    }
+    
+    .buttonContainer {
+        border: 3px solid #fff;
+        padding: 20px;
+    }
+    
+    .button {
+        width: 50%;
+        float: left;
+        padding: 20px;
+        border: 2px solid red;
+    }

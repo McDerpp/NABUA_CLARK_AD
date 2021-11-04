@@ -160,25 +160,6 @@ async commit():Promise<CRUDReturn>{
       var change : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>= await this.DB.collection("users").get();   
 
 
-  
-/*
-      if(body.hasOwnProperty("email")){if(typeof body?.email==="string")
-      this.setEmail(body?.email); 
-         else this.setEmail(body?.name);}
-     
-     if(body.hasOwnProperty("name")){if(typeof body?.name==="string")
-       this.setName(body?.name); 
-          else ctr++;}    
-
-     if(body.hasOwnProperty("age")){if(typeof body?.age==="number")
-        this.setAge(body?.age); 
-        else ctr++;}
-
-     if(body.hasOwnProperty("password")){if(typeof body?.password==="string")
-        this.setPassword(body?.password); 
-        else ctr++;}*/
-
-
 
 
   

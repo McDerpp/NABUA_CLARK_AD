@@ -1,5 +1,3 @@
-<p>register works!</p>
-
 <body>
 
     <div class="maincontent">
@@ -7,35 +5,45 @@
         <div class="login">
             <div class="inputs">
                 <form class="inputs" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                    <div>
+                        <label for="NAME ">Name </label>
+                        <input type="text " name="NAME" placeholder="enter name" formControlName='fcName' />
+                    </div>
 
-                    <label for="NAME ">Name</label>
-                    <input type="text " name="NAME" placeholder="enter name" formControlName='fcName' />
+                    <div>
+                        <label for="AGE ">Age </label>
+                        <input type="age " name="AGE" placeholder="enter age " formControlName='fcAge' />
+                    </div>
+
+                    <div>
+                        <label for="EMAIL">Email </label>
+                        <input type="email" name="EMAIL " placeholder="enter password " formControlName='fcEmail' />
+                    </div>
+
+                    <div>
+                        <label for="PASSWORD ">Password </label>
+                        <input type="password" name="PASSWORD " placeholder="enter passsword" formControlName='fcPassword' />
+                    </div>
+
+                    <div>
+                        <label for="PASSWORD_2 ">Confirm password</label>
+                        <input type="password" name="PASSWORD_2 " placeholder="confirm password" formControlName='fcPassword2' />
+                    </div>
 
 
-                    <label for="AGE ">Age</label>
-                    <input type="age " name="AGE" placeholder="enter age " formControlName='fcAge' />
 
-                    <label for="EMAIL">Email</label>
-                    <input type="email" name="EMAIL " placeholder="enter password " formControlName='fcEmail' />
 
-                    <label for="PASSWORD ">Password</label>
-                    <input type="password" name="PASSWORD " placeholder="enter passsword" formControlName='fcPassword' />
 
-                    <label for="PASSWORD_2 ">Confirm password</label>
-                    <input type="password" name="PASSWORD_2 " placeholder="confirm password" formControlName='fcPassword2' />
-
-                    <p>{{error}}</p>
-                    <p>{{registerForm.value | json}} </p>
-                    <p>{{registerForm.status}}</p>
-
-                    <button type="submit " [disabled]="!registerForm.valid">register</button> -->
 
 
 
 
                 </form>
 
-                <button (click)="nav('login') ">Back</button>
+                <div class="buttonContainer">
+                    <div class="button"><button type="submit " [disabled]="!registerForm.valid">register</button></div>
+                    <div class="button"><button (click)="nav('login') ">Back</button></div>
+                </div>
 
             </div>
         </div>
