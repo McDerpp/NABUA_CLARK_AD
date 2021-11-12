@@ -1,9 +1,17 @@
 body {
     background-image: url(../../assets/backgroundTest.jpg);
-    background-size: 100% 100%;
     font-family: 'ZCOOL KuaiLe', cursive;
-    max-width: 100%;
-    max-height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    -webkit-background-size: cover;
+    -ms-content-zooming: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
 }
 
 table,
@@ -36,4 +44,55 @@ thead {
 
 table {
     width: 700px;
+}
+
+.menu {
+    position: fixed;
+    top: 80px;
+    right: 50px;
+    text-align: center;
+    input {
+        width: 350px;
+        height: 25px;
+    }
+    .deleting {
+        padding-top: 20px;
+    }
+    .delete {
+        display: inline-block;
+        width: fit-content;
+        display: inline-block;
+        padding-left: 5px;
+        padding-right: 5px;
+        input {
+            width: 250px;
+        }
+    }
+    .button {
+        display: inline-block;
+        width: fit-content;
+        display: inline-block;
+    }
+    button {
+        padding: 5px;
+        margin: 5px;
+    }
+}
+
+.logout {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+.changingData {
+    .change {
+        display: inline-block;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    input {
+        right: 50px;
+        width: 250px;
+    }
 }

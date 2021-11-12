@@ -24,6 +24,7 @@ export class LoginComponent implements OnInit {
 
 
 async login(){
+  
 var result:any= await this.api.post(environment.API_URL+"/user/login",
 {"email":this.fCEmail.value,
 "password":this.fCPassword.value}).toPromise();

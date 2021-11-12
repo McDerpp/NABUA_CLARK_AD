@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Testability } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -107,7 +107,11 @@ export class RegisterComponent implements OnInit {
   nav(destination: string) {
     this.router.navigate([destination]);
   }
+
+
 }
+
+
 
 
 

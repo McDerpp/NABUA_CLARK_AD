@@ -41,7 +41,7 @@
                 </form>
 
                 <div class="buttonContainer">
-                    <div class="button"><button type="submit " [disabled]="!registerForm.valid">register</button></div>
+                    <div class="button"><button type="submit" [disabled]="!registerForm.valid" (click)="onSubmit()">register</button></div>
                     <div class="button"><button (click)="nav('login') ">Back</button></div>
                 </div>
 

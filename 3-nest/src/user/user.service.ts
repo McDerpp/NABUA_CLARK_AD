@@ -55,7 +55,7 @@ var populatedData = [];
 try{
   var allUsers = await this. getAllUserObjects();
   allUsers.forEach((user)=>{
-populatedData.push(user.toJson());
+populatedData.push(user.toJsonId());
   });
   return {"success":true,"data":populatedData}
 }catch(error){
@@ -68,6 +68,7 @@ populatedData.push(user.toJson());
 
 
 async getAllUserObjects():Promise<Array<User>>{  
+  console.log("hello23232")
   var populatedData = [];
   try{
   var dbData : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>=
@@ -82,6 +83,7 @@ async getAllUserObjects():Promise<Array<User>>{
         data["password"],
         data["id"],
     ));
+    console.log(data.id)
   }
   })
    //for(const user of this.users.values())
@@ -232,7 +234,6 @@ checkEmails(body:any,id:string):boolean{
 async patchData(id:string,body:any):Promise<CRUDReturn>{
 
  var exists = this.checkEmailsV2(body.email,{exceptionId:id});
-  //var exists = this.checkEmailsV2(body.email);
   if(await exists===true) {return{ success:false, "data":"EMAIL ALREADY EXISTED" }; }
 
   var change : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>= await this.DB.collection("users").get();  
@@ -350,9 +351,6 @@ async login(body:any):Promise<CRUDReturn>{
 
 search(search:any):CRUDReturn{
   var storage = [];
-
-  
-
 
   for(const [key,user] of this.users.entries()){   
     if(this.users.get(key).checkValue(search)===true){
