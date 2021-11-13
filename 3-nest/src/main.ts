@@ -22,6 +22,6 @@ methods:'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
 credentials:true,
 
 });
-  await app.listen(3699);
+  await app.listen(3000);
 }
 bootstrap();

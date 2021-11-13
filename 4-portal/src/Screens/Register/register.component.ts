@@ -34,6 +34,11 @@ export class RegisterComponent implements OnInit {
   successID:{name:string, age:number, email:string,password:string} = {name:"", age:0, email:"",password:""};
 
   async onSubmit() {
+    if (!this.registerForm.valid) {      
+      this.error = 'No fields must be empty';
+      return;      
+  }
+
     if (
       this.registerForm.value['fcPassword'] !==
       this.registerForm.value['fcPassword2']
@@ -41,12 +46,15 @@ export class RegisterComponent implements OnInit {
       this.error = 'Password doesnt match!';
       return;
     }
-    if (!this.registerForm.valid) {
-      {
-        this.error = 'No fields must be empty';
-        return;
-      }
+   
+
+    if(this.registerForm.value.fcAge<=100 && this.registerForm.value.fcAge>=100){
+      this.error = 'Invalid age';
+      return;
     }
+
+
+
     if (this.registerForm.valid) {
       var payload: {
         name: string;

@@ -10,6 +10,8 @@
                             <th scope="col">Name</th>
                             <th scope="col">Age</th>
                             <th scope="col">Email</th>
+                            <th scope="col"></th>
+
 
                         </tr>
                     </thead>
@@ -18,10 +20,13 @@
                             <td>{{user.name}} </td>
                             <td class="age">{{user.age }}</td>
                             <td>{{user.email}}</td>
-                            <td>{{user.id}}</td>
-                            <!-- <td>
+                            <td class="interactable">
                                 <div class=delete><button (click)="deleteUserData(user.id)">DELETE!</button></div>
-                            </td> -->
+                                <div class=delete><button (click)="searchID(user.id)">UPDATE!</button></div>
+                            </td>
+
+
+
 
                         </tr>
                     </tbody>
@@ -30,45 +35,52 @@
             <div class=menu>
                 <div class=search>
                     <div class><input type="text " name="search " placeholder="enter ID/NAME/AGE " [formControl]="fcInput" /></div>
-                    <div class=button><button (click)="searchID()">search by ID</button></div>
-                    <div class=button><button (click)="search()">search by other elements</button></div>
+                    <div class=button><button (click)="search()">search </button></div>
                     <div class=button><button (click)="getAll()">Refresh list</button></div>
                 </div>
 
 
                 <div class=changingData>
 
-                    <div class=delete><input type="text " name="search " placeholder="enter ID for updating credentials" [formControl]="fcInput" /></div>
-                    <div class=delete><button (click)="searchID()">Search ID</button></div>
-
+                    <div class=delete>
+                        <!-- <h3>{{Name}}</h3> -->
+                    </div>
 
                     <div>
                         <div class=delete>
-                            <h5>{{Name}}</h5>
+                            <h4>change name</h4>
                         </div>
                         <div class=change><input type="text " name="search " placeholder="enter new name" [formControl]="fcName" /></div>
                     </div>
 
                     <div>
                         <div class=change>
-                            <h5>{{Age}}</h5>
+                            <h4>change age</h4>
                         </div>
-                        <div class=change><input type="text " name="search " placeholder="enter new age " [formControl]="fcAge" /></div>
+                        <div class=change><input type="text " name="search " placeholder="enter new age" [formControl]="fcAge" /></div>
                     </div>
 
                     <div>
                         <div class=change>
-                            <h5>{{Email}}</h5>
+                            <h4>change email</h4>
                         </div>
-                        <div class=change><input type="text " name="search " placeholder="enter new email " [formControl]="fcEmail" /></div>
+                        <div class=change><input type="text " name="search " placeholder="enter new email" [formControl]="fcEmail" /></div>
                     </div>
 
                     <div>
                         <div class=change>
-                            <h5>current password</h5>
+                            <h4>change password</h4>
                         </div>
-                        <div class=change><input type="text " name="search " placeholder=" enter new password " [formControl]="fcPassword" /></div>
+                        <div class=change><input type="password" name="search " placeholder=" enter new password" [formControl]="fcPassword" /></div>
                     </div>
+
+                    <div>
+                        <div class=change>
+                            <h4>confirm password</h4>
+                        </div>
+                        <div class=change><input type="password" name="search " placeholder=" enter new password" [formControl]="fcConfirmPassword" /></div>
+                    </div>
+
                     <div>
                         <div class=delete><button (click)="patchData()">Update credentials</button></div>
                     </div>

@@ -20,9 +20,7 @@ export class UserService {
         
 
 constructor(){   
-
     var populatedData = [];
-  this.populate();
 }
 
 async populate(){
@@ -60,15 +58,66 @@ populatedData.push(user.toJsonId());
   return {"success":true,"data":populatedData}
 }catch(error){
   return {"success":false,"data":error() };
+} 
+}
 
-}
- 
-}
+
+async search(search:any):Promise<CRUDReturn>{
+  var storage = [];
+  console.log(search)
+  var change : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>= await this.DB.collection("users").get();      
+  for(const doc of change.docs){ 
+    var data=doc.data();
+    if (data["name"]==search||doc.id==search||data["email"]==search||data["age"]==search){
+      storage.push(new User(
+        data["name"],
+        data["age"],
+        data["email"],
+        data["password"],
+        doc.id,
+    ))
+      console.log("YAY!")
+    }
+    
+  
+    else
+    console.log("nay!")
+  }
+  return {"success":true,"data":storage}
+   
+  }
+    
+
+
+
+// async search(search:any):Promise<CRUDReturn>{
+//   var storage = [];
+
+
+
+//   for(const [key,user] of this.users.entries()){   
+//     if(this.users.get(key).checkValue(search)===true){
+//       console.log(this.users.get(key).checkValue(search));
+//       storage.push(user.toJsonId());   
+//         }
+//   }
+
+//   if( storage.length===0)
+//   return {"success": false,
+//   "data":storage }
+
+
+//   return {"success": true,
+//   "data":storage }
+
+// }
+
+
 
 
 
 async getAllUserObjects():Promise<Array<User>>{  
-  console.log("hello23232")
+
   var populatedData = [];
   try{
   var dbData : FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>=
@@ -81,9 +130,9 @@ async getAllUserObjects():Promise<Array<User>>{
         data["age"],
         data["email"],
         data["password"],
-        data["id"],
+        doc.id,
     ));
-    console.log(data.id)
+    
   }
   })
    //for(const user of this.users.values())
@@ -96,15 +145,16 @@ async getAllUserObjects():Promise<Array<User>>{
    
   }
 
+
 async searchID(id:string):Promise<CRUDReturn>{
 
-  var userResults = await this.DB.collection("users").get();
+  var userResults = await this.DB.collection("users").get();  
 for(const doc of userResults.docs){  
 if(doc.id===id){
   var data=doc.data();
- var newUser=new User(data["name"],data["age"],data["email"],data["password"],data["id"]);
- this.users.set(data["id"],newUser);  
-  return{"success":true,"data":newUser.toJson()}
+ var newUser=new User(data["name"],data["age"],data["email"],data["password"],doc.id);
+  this.users.set(data["id"],newUser);  
+  return{"success":true,"data":newUser.toJsonId()}
 }
 
     }
@@ -112,6 +162,27 @@ if(doc.id===id){
     return {"success":false,
     "data":'FOUND NOT USER'};
 }
+
+// async search(id:string):Promise<CRUDReturn>{
+//   var storage = [];
+//   var userResults = await this.DB.collection("users").get();  
+// for(const doc of userResults.docs){  
+//   var data=doc.data();
+//   if(data.age===id||doc.id==id||data.email==||data.name==id){  
+//  var newUser=new User(data["name"],data["age"],data["email"],data["password"],doc.id);
+// storage.push(newUser)
+
+ 
+// }
+// return{"success":true,"data":newUser.toJsonId()}
+//     }
+
+//     return {"success":false,
+//     "data":'FOUND NOT USER'};
+// }
+
+
+
 
 
 async addUser(body:any):Promise<CRUDReturn>{
@@ -248,45 +319,27 @@ async patchData(id:string,body:any):Promise<CRUDReturn>{
     var agePatch=doc.data()["age"];
    var emailPatch=doc.data()["email"];
 
-    if(body.hasOwnProperty("name")){
-      if(typeof body?.name!=="string"){check++;} 
-      namePatch=body.name;   
-      }
-      
-    if(body.hasOwnProperty("age")){
-      if(typeof body?.age!=="number"){check++;} 
-        agePatch=body.age       
-        }
-      
-    if(body.hasOwnProperty("password")){
-      if(typeof body?.password!=="string"){check++;} 
-      passwordPatch=body.password;
-        
-     
-          
-        }
-      
-    if(body.hasOwnProperty("email")){
-      if(typeof body?.email!=="string"){check++;} 
-          emailPatch=body.email;
-          console.log("naay email");
+    if(body.hasOwnProperty("name")){if(typeof body?.name!=="string"){check++;}namePatch=body.name;}      
+    if(body.hasOwnProperty("age")){if(typeof body?.age!=="number"){check++;}agePatch=body.age;}      
+    if(body.hasOwnProperty("password")){if(typeof body?.password!=="string"){check++;} passwordPatch=body.password;}      
+    if(body.hasOwnProperty("email")){if(typeof body?.email!=="string"){check++;} emailPatch=body.email;
+
+    // if(body.name=="" ||body.name==null ){body.name=doc.data()["name"]}
+    // if(body.password==""||body.password==null ){body.password=doc.data()["password"]}
+    // if(body.age==""||body.age==null ){body.age=doc.data()["age"]}
+    // if(body.email==""||body.email==null ){body.name=doc.data()["email"]}
+           
           }      
 
           if(check!=0) return{ success:false, data: "INVALID TYPES" };  
-
-
     
       var result =putData.update(        
         {
         "name":namePatch,
         "age":agePatch,
         "email":emailPatch,
-       "password":passwordPatch
-    
-      })
-  
-
-      
+       "password":passwordPatch    
+      })      
 
       return {"success":true,"data":"UPDATED"}
     }
@@ -294,14 +347,10 @@ async patchData(id:string,body:any):Promise<CRUDReturn>{
 
   }
   return{"success":false,"data":"USER DOES NOT EXIST"}
-      
-  
-    
-    
-        
+     
       }
       
-   
+  
  
   
     async deleteUserData(id:string):Promise<CRUDReturn>{
@@ -314,18 +363,7 @@ async patchData(id:string,body:any):Promise<CRUDReturn>{
     }
     return{"success":false,"data":"USER DOES NOT EXIST"};
   }
-/*
 
-deleteUserData(id:string):CRUDReturn{
-  if(this.users.has(id)){
-     this.users.delete(id);
-        return{ "success":true,
-    "data": "SUCCESSFULLY DELETED THE USER"}}
-
-    return{"success":false,
-        "data": "cant find the user"}
-
-}*/
 
 async login(body:any):Promise<CRUDReturn>{
 
@@ -338,8 +376,7 @@ async login(body:any):Promise<CRUDReturn>{
         var data=doc.data();
         var newUser=new User(data["name"],data["age"],data["email"],data["password"],data["id"]);
         this.users.set(data["id"],newUser);  
-         return{"success":true,"data":newUser.toJson()}}
-       
+         return{"success":true,"data":newUser.toJson()}}      
           
        }
 
@@ -348,25 +385,4 @@ async login(body:any):Promise<CRUDReturn>{
 
 
 }
-
-search(search:any):CRUDReturn{
-  var storage = [];
-
-  for(const [key,user] of this.users.entries()){   
-    if(this.users.get(key).checkValue(search)===true){
-      console.log(this.users.get(key).checkValue(search));
-      storage.push(user.toJson());   
-        }
-  }
-
-  if( storage.length===0)
-  return {"success": false,
-  "data":storage }
-
-
-  return {"success": true,
-  "data":storage }
-
-}
-
 }

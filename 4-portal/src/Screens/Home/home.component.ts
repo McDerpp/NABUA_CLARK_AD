@@ -6,6 +6,7 @@ import { FormControl } from '@angular/forms';
 
 
 
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -21,48 +22,71 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {   
     this.getAll();
+    this.fcId==null
   }
+
+
 
   users: Array<any> = [];
   fcSearch=new FormControl();
   fcInput=new FormControl();
+
   fcName=new FormControl();
   fcAge=new FormControl();
   fcEmail=new FormControl();
   fcPassword=new FormControl();
+  fcConfirmPassword=new FormControl();
+
+  InName:any="";
+  InAge:any="";
+  InEmail:any="";
+  InPassword:any="";
   
 
-  Name= "current name";
-  Age="current age";
-  Email="current email";
- 
   
-
+  fcId:any;
+  selection:any;
+  
+  
+   
 
   async getAll(){
+    this.fcId=null
+    
     var result: any = await this.api
     .get(environment.API_URL + '/user/all').toPromise();
-    this.users = result.data;       
+    this.users = result.data;  
+
+    
+   
+
   }
 
-  async searchID(){
-    if(this.fcInput.value==null){
-    alert("input something");
-  return;}
-
+  async searchID(id:any){    
+    this.fcId=id;
+    console.log(id)
     var result: any = await this.api
-    .get(environment.API_URL + '/user/'+this.fcInput.value).toPromise();    
+    .get(environment.API_URL + '/user/'+ id).toPromise();    
   if(result.success==false){
   alert("ID does not exist")
-  return} 
-  this.users=Array(result.data);
-  this.Name=result.data.name;
-  this.Age=result.data.age;
-  this.Email=result.data.email;
+  return}  
+  // this.Name="user:",result.data.name
+  // this.Age=result.data.age;
+  // this.Email=result.data.email;
+
+  this.InName=result.data.name
+  this.InAge=result.data.age;
+  this.InEmail=result.data.email;
+  this.InPassword=result.data.password;
+
+
+
+      // console.log("pre:",this.InEmail.value)
+      // console.log("pre:",this.InPassword.value)
     }
 
   async search(){
-
+   this.selection=this.fcInput;
     if(this.fcInput.value==null){
     alert("input something");
     return;}
@@ -73,31 +97,77 @@ export class HomeComponent implements OnInit {
     alert("elements does not exist")
     return} 
     this.users=result.data;
-    console.log(result.data.name.value)
+    console.log(result.data)
    
     
   }
 
 
-    async patchData(){
-      if(this.fcInput.value==null){
-      alert("input something")
-    return;}
+    async patchData(){ 
+      
+        if(this.fcId==null){
+          alert("select a user first to change credentials")      
+          return
+          }
 
+        if(this.fcPassword.value!=this.fcConfirmPassword.value){
+          alert("Password does not match")          
+          this.fcAge.setValue(null)
+          this.fcEmail.setValue(null)
+          this.fcName.setValue(null)
+          this.fcPassword.setValue(null)
+          this.fcConfirmPassword.setValue(null)
+          return
+          }
+
+
+      if(this.fcName.value==" ")
+      alert("EY!")
+
+      if(this.fcName.value=="")
+      alert("yo!")
+ 
+      if(this.fcName.value==null)
+      alert("yow!")
+
+      if(this.fcName.value!=""){
+      this.InName=this.fcName.value}
+
+      if(this.fcAge.value!=""){
+      this.InAge=this.fcAge.value}
+
+      if(this.fcEmail.value!=""){
+      this.InEmail=this.fcEmail.value}
+
+      if(this.fcPassword.value!=""){
+      this.InPassword=this.fcPassword.value}
+
+      // console.log("when empty:",this.InName)
+
+
+      console.log("this is the id when arrive at patch:",this.fcId)
     var result: any = await this.api
-    .patch(environment.API_URL + '/user/'+this.fcInput.value,
-    Array({"name?":this.fcName.value,
-    "age?":this.fcAge.value,
-    "email?":this.fcEmail.value,
-    "password?":this.fcPassword.value  
-  })).toPromise();
+    .patch(environment.API_URL + '/user/'+ this.fcId,
+    {"name":String(this.InName),
+    "age":parseInt(this.InAge),
+    "email":String(this.InEmail),
+    "password":String(this.InPassword)  
+  }).toPromise();
+
+  console.log(result.data)
+
+
+
   if(result.success==false){
-  alert("ID does not exist")
+  alert(result.data)
   return
 }
   else
   alert("successfully updated the credentials")
-   
+
+
+  this.fcId==null
+
   }
  
 

@@ -12,6 +12,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: scroll;
+    overflow-y: scroll;
 }
 
 table,
@@ -19,23 +20,33 @@ tr td {
     position: relative;
     left: 50px;
     top: 50px;
-    width: 200px;
+    width: 400px;
     background-color: rgb(240, 191, 172, 0.3);
-    border: 1px solid black;
     padding: 5px;
+    .delete {
+        display: inline-block;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    .interactable {
+        width: 175px;
+    }
 }
 
 tbody {
-    display: block;
-    height: 400px;
     overflow-y: scroll;
+    display: block;
+    height: 700px;
 }
 
 thead,
 tbody tr {
     display: table;
-    width: 50%;
     table-layout: fixed;
+    .age {
+        width: 35px;
+        align-self: center;
+    }
 }
 
 thead {
@@ -43,14 +54,13 @@ thead {
 }
 
 table {
-    width: 700px;
+    width: 60%;
 }
 
 .menu {
-    position: fixed;
-    top: 80px;
-    right: 50px;
-    text-align: center;
+    position: relative;
+    top: -550px;
+    left: 1400px;
     input {
         width: 350px;
         height: 25px;
